@@ -27,6 +27,11 @@ class FDDDataloader:
         ):
             raise ValueError("``dataframe`` and ``label`` must have the same indices.")
 
+        if window_size <= 0 or step_size <= 0:
+            raise ValueError(
+                "``step_size`` and ``window_size`` must be positive numbers."
+            )
+
         if step_size > window_size:
             raise ValueError("``step_size`` must be less or equal to ``window_size``.")
 
