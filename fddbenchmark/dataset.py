@@ -1,11 +1,12 @@
 import os
+import zipfile
 from typing import List
 
-from tqdm.auto import tqdm
-from fddbenchmark.config import AVAILABLE_DATASETS, SERVER_URL, DATA_FOLDER
-import zipfile
-import requests
 import pandas as pd
+import requests
+from tqdm.auto import tqdm
+
+from fddbenchmark.config import AVAILABLE_DATASETS, DATA_FOLDER, SERVER_URL
 
 
 class FDDDataset:

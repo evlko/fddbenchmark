@@ -1,6 +1,7 @@
-from fddbenchmark import FDDDataset, FDDDataloader, FDDEvaluator
 import numpy as np
 import pandas as pd
+
+from fddbenchmark import FDDDataloader, FDDDataset, FDDEvaluator
 
 
 def test_small_tep():

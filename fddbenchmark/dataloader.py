@@ -1,7 +1,8 @@
 from typing import Optional
-from tqdm import tqdm
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+from tqdm import tqdm
 
 
 class FDDDataloader:

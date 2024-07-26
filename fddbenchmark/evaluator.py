@@ -1,8 +1,9 @@
-import pandas as pd
 import numpy as np
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics.cluster import normalized_mutual_info_score, adjusted_rand_score
+import pandas as pd
 from scipy.optimize import linear_sum_assignment as linear_assignment
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics.cluster import (adjusted_rand_score,
+                                     normalized_mutual_info_score)
 
 
 class FDDEvaluator:

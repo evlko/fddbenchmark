@@ -8,8 +8,8 @@ __version__ = "0.0.3"
 __author__ = "Vitaliy Pozdnyakov, Mikhail Goncharov, Platon Gogol"
 __credits__ = "AIRI"
 
-from .dataset import FDDDataset
 from .dataloader import FDDDataloader
+from .dataset import FDDDataset
 from .evaluator import FDDEvaluator
 
 __all__ = [
