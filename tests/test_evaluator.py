@@ -4,7 +4,7 @@ import pandas as pd
 
 
 def test_small_tep():
-    dataset = FDDDataset(name='small_tep')
+    dataset = FDDDataset(name="small_tep")
     loader = FDDDataloader(
         dataset.df,
         dataset.test_mask,
@@ -14,7 +14,7 @@ def test_small_tep():
         use_minibatches=True,
         batch_size=1024,
     )
-    
+
     np.random.seed(0)
     pred = []
     label = []
@@ -25,18 +25,16 @@ def test_small_tep():
     pred = pd.concat(pred)
     label = pd.concat(label)
 
-    evaluator = FDDEvaluator(
-        step_size=loader.step_size
-    )
+    evaluator = FDDEvaluator(step_size=loader.step_size)
 
     metrics = evaluator.evaluate(label, pred)
-    assert np.isclose(metrics['detection']['TPR'], 0.9535, atol=1e-4)
-    assert np.isclose(metrics['detection']['FPR'], 0.9517, atol=1e-4)
-    assert metrics['detection']['ADD'] == 0.03
-    assert np.isclose(metrics['diagnosis']['CDR_total'], 0.0514, atol=1e-4)
-    assert metrics['confusion_matrix'].shape == (21, 21)
-    assert np.isclose(metrics['clustering']['ACC'], 0.0531, atol=1e-4)
-    assert np.isclose(metrics['clustering']['NMI'], 0.0008, atol=1e-4)
-    assert np.isclose(metrics['clustering']['ARI'], -18e-7, atol=1e-7)
-    assert metrics['classification']['TPR'].shape == (21,)
-    assert metrics['classification']['FPR'].shape == (21,)
+    assert np.isclose(metrics["detection"]["TPR"], 0.9535, atol=1e-4)
+    assert np.isclose(metrics["detection"]["FPR"], 0.9517, atol=1e-4)
+    assert metrics["detection"]["ADD"] == 0.03
+    assert np.isclose(metrics["diagnosis"]["CDR_total"], 0.0514, atol=1e-4)
+    assert metrics["confusion_matrix"].shape == (21, 21)
+    assert np.isclose(metrics["clustering"]["ACC"], 0.0531, atol=1e-4)
+    assert np.isclose(metrics["clustering"]["NMI"], 0.0008, atol=1e-4)
+    assert np.isclose(metrics["clustering"]["ARI"], -18e-7, atol=1e-7)
+    assert metrics["classification"]["TPR"].shape == (21,)
+    assert metrics["classification"]["FPR"].shape == (21,)
