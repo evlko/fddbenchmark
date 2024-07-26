@@ -8,3 +8,4 @@ data/*
 .vscode/*
 tutorial/data/*
 /.venv
+/.idea
