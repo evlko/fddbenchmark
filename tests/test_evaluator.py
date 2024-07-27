@@ -7,9 +7,8 @@ from fddbenchmark import FDDDataloader, FDDDataset, FDDEvaluator
 def test_small_tep():
     dataset = FDDDataset(name="small_tep")
     loader = FDDDataloader(
-        dataset.df,
-        dataset.test_mask,
-        dataset.label,
+        dataset=dataset,
+        train=False,
         window_size=100,
         step_size=1,
         use_minibatches=True,
