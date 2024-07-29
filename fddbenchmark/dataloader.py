@@ -173,9 +173,9 @@ class FDDDataLoaderDask(FDDDataloader):
             random_state=random_state,
         )
         path = f"data/{self.dataset.name}/dataset.csv"
-        self.ddf = dd.read_csv(path)
-        self.ddf = self.ddf.drop(self.ddf.columns[:2].tolist(), axis=1)
-        self.dask_array = self.ddf.to_dask_array(lengths=True)
+        ddf = dd.read_csv(path)
+        ddf = ddf.drop(ddf.columns[:2].tolist(), axis=1)
+        self.dask_array = ddf.to_dask_array(lengths=True)
 
     @time_tracker(return_time=False)
     def get_batch(self, indices: np.ndarray) -> np.ndarray:
