@@ -174,8 +174,7 @@ class FDDDataLoaderDask(FDDDataloader):
         )
         path = f"data/{self.dataset.name}/dataset.csv"
         self.ddf = dd.read_csv(path)
-        self.ddf = self.ddf.set_index("sample")
-        self.ddf = self.ddf.drop(self.ddf.columns[0], axis=1)
+        self.ddf = self.ddf.drop(self.ddf.columns[:2].tolist(), axis=1)
         self.dask_array = self.ddf.to_dask_array(lengths=True)
 
     @time_tracker(return_time=False)
