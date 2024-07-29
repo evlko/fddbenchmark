@@ -6,6 +6,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from fddbenchmark.dataset import FDDDataset
+from utils.time_tracker import time_tracker
 
 
 class FDDDataloader(ABC):
@@ -139,6 +140,7 @@ class FDDDataloader(ABC):
 
 
 class FDDDataloaderPandas(FDDDataloader):
+    @time_tracker(return_time=False)
     def get_batch(self, indicies: np.ndarray) -> pd.DataFrame:
         ts_batch = self.dataset.df.values[indicies]  # (batch_size, window_size, ts_dim)
         return ts_batch
