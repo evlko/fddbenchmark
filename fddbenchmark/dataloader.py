@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import Optional
 
 import numpy as np
@@ -7,7 +8,7 @@ from tqdm import tqdm
 from fddbenchmark.dataset import FDDDataset
 
 
-class FDDDataloader:
+class FDDDataloader(ABC):
     def __init__(
         self,
         dataset: FDDDataset,
@@ -126,11 +127,18 @@ class FDDDataloader:
         windows_indices = (
             ends_indices[:, None] - np.arange(0, self.window_size, self.dilation)[::-1]
         )
-        print(windows_indices)
-        ts_batch = self.dataset.df.values[
-            windows_indices
-        ]  # (batch_size, window_size, ts_dim)
+        ts_batch = self.get_batch(windows_indices)
         label_batch = self.dataset.label.values[ends_indices]
         index_batch = self.dataset.label.index[ends_indices]
 
         return ts_batch, index_batch, label_batch
+
+    @abstractmethod
+    def get_batch(self, indicies: np.ndarray) -> pd.DataFrame:
+        pass
+
+
+class FDDDataloaderPandas(FDDDataloader):
+    def get_batch(self, indicies: np.ndarray) -> pd.DataFrame:
+        ts_batch = self.dataset.df.values[indicies]  # (batch_size, window_size, ts_dim)
+        return ts_batch
