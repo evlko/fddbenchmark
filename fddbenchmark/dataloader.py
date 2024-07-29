@@ -20,12 +20,10 @@ class FDDDataloader:
         shuffle: bool = False,
         random_state: Optional[int] = None,
     ) -> None:
-        mask = dataset.train_mask if train else dataset.test_mask
-
         if dataset.df.index.names != ["run_id", "sample"]:
             raise ValueError("``dataframe`` must have multi-index ('run_id', 'sample')")
 
-        if not np.all(dataset.df.index == mask.index) or not np.all(
+        if not np.all(dataset.df.index == dataset.train_mask.index) or not np.all(
             dataset.df.index == dataset.label.index
         ):
             raise ValueError("``dataframe`` and ``label`` must have the same indices.")
@@ -51,11 +49,11 @@ class FDDDataloader:
 
         self.window_end_indices = self.get_windows(
             dataset=dataset,
-            mask=mask,
             window_size=window_size,
             step_size=step_size,
             shuffle=shuffle,
             random_state=random_state,
+            train=train,
         )
 
         n_samples = len(self.window_end_indices)
@@ -65,22 +63,34 @@ class FDDDataloader:
         self.n_batches = len(batch_seq) - 1
 
     @staticmethod
+    def get_mask(dataset: FDDDataset, train: bool) -> pd.Series:
+        return dataset.train_mask if train else ~dataset.train_mask
+
     def get_windows(
+        self,
         dataset: FDDDataset,
-        mask: pd.Series,
         window_size: int,
         step_size: int,
         shuffle: bool,
         random_state: int,
+        train: bool,
     ):
         window_end_indices = []
 
-        run_ids = dataset.df[mask].index.get_level_values(0).unique()
+        run_ids = (
+            dataset.df[self.get_mask(dataset=dataset, train=train)]
+            .index.get_level_values(0)
+            .unique()
+        )
         for run_id in tqdm(run_ids, desc="Creating sequence of samples"):
             indices = np.array(dataset.df.index.get_locs([run_id]))
             indices = indices[window_size - 1 :]
             indices = indices[::step_size]
-            indices = indices[mask.iloc[indices].to_numpy(dtype=bool)]
+            indices = indices[
+                self.get_mask(dataset=dataset, train=train)
+                .iloc[indices]
+                .to_numpy(dtype=bool)
+            ]
             window_end_indices.extend(indices)
 
         if random_state is not None:
@@ -116,7 +126,7 @@ class FDDDataloader:
         windows_indices = (
             ends_indices[:, None] - np.arange(0, self.window_size, self.dilation)[::-1]
         )
-
+        print(windows_indices)
         ts_batch = self.dataset.df.values[
             windows_indices
         ]  # (batch_size, window_size, ts_dim)

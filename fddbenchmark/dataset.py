@@ -38,11 +38,7 @@ class FDDDataset:
         train_mask = read_csv_pgbar(ref_path + "train_mask.csv", index_col=ICOLS)[
             "train_mask"
         ]
-        test_mask = read_csv_pgbar(ref_path + "test_mask.csv", index_col=ICOLS)[
-            "test_mask"
-        ]
         self.train_mask = train_mask.astype("boolean")
-        self.test_mask = test_mask.astype("boolean")
 
 
 def extracting_files(zfile_path: str, ref_path: str, bsize: int = 1024 * 10000) -> None:
