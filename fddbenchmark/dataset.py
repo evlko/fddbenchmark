@@ -6,7 +6,8 @@ import pandas as pd
 import requests
 from tqdm.auto import tqdm
 
-from fddbenchmark.config import AVAILABLE_DATASETS, DATA_FOLDER, SERVER_URL
+from fddbenchmark.config import (AVAILABLE_DATASETS, DATA_FOLDER, ICOLS,
+                                 SERVER_URL)
 
 
 class FDDDataset:
@@ -27,18 +28,19 @@ class FDDDataset:
             download_pgbar(url, zfile_path, fname=f"{self.name}.zip")
 
         extracting_files(zfile_path, ref_path)
+
         self.df = read_csv_pgbar(
-            ref_path + "dataset.csv", index_col=["run_id", "sample"]
+            ref_path + "dataset.csv",
+            index_col=ICOLS,
+            cols=ICOLS,
         )
-        self.label = read_csv_pgbar(
-            ref_path + "labels.csv", index_col=["run_id", "sample"]
-        )["labels"]
-        train_mask = read_csv_pgbar(
-            ref_path + "train_mask.csv", index_col=["run_id", "sample"]
-        )["train_mask"]
-        test_mask = read_csv_pgbar(
-            ref_path + "test_mask.csv", index_col=["run_id", "sample"]
-        )["test_mask"]
+        self.label = read_csv_pgbar(ref_path + "labels.csv", index_col=ICOLS)["labels"]
+        train_mask = read_csv_pgbar(ref_path + "train_mask.csv", index_col=ICOLS)[
+            "train_mask"
+        ]
+        test_mask = read_csv_pgbar(ref_path + "test_mask.csv", index_col=ICOLS)[
+            "test_mask"
+        ]
         self.train_mask = train_mask.astype("boolean")
         self.test_mask = test_mask.astype("boolean")
 
@@ -85,13 +87,21 @@ def download_pgbar(
 
 
 def read_csv_pgbar(
-    csv_path: str, index_col: List[str], chunksize: int = 1024 * 100
+    csv_path: str,
+    index_col: List[str],
+    cols: List[str] = None,
+    chunksize: int = 1024 * 100,
 ) -> pd.DataFrame:
     rows = sum(1 for _ in open(csv_path, "r")) - 1
     chunk_list = []
     with tqdm(total=rows, desc=f"Reading {csv_path}") as pbar:
-        for chunk in pd.read_csv(csv_path, index_col=index_col, chunksize=chunksize):
-            chunk_list.append(chunk)
-            pbar.update(len(chunk))
+        try:
+            for chunk in pd.read_csv(
+                csv_path, index_col=index_col, usecols=cols, chunksize=chunksize
+            ):
+                chunk_list.append(chunk)
+                pbar.update(len(chunk))
+        except ValueError:
+            raise ValueError("``dataframe`` must have multi-index ('run_id', 'sample')")
     df = pd.concat((f for f in chunk_list), axis=0)
     return df
