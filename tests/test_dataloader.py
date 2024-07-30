@@ -1,6 +1,5 @@
-import numpy as np
-
 from fddbenchmark import FDDDataset
+from fddbenchmark.polars_dataloader import PolarsDataloader
 from fddbenchmark.dataloader import FDDDataLoaderDask
 
 
