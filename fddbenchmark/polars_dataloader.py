@@ -1,3 +1,4 @@
+import sys
 from typing import Optional
 
 from fddbenchmark import FDDDataloader, FDDDataset
@@ -6,6 +7,7 @@ import pandas as pd
 import polars as pl
 
 from fddbenchmark.config import DATA_FOLDER
+from utils.time_tracker import time_tracker
 
 
 class PolarsDataloader(FDDDataloader):
@@ -33,8 +35,20 @@ class PolarsDataloader(FDDDataloader):
             random_state=random_state,
         )
         path = f"data/{self.dataset.name}/dataset.csv"
-        self.df = (pl.read_csv(path)).to_numpy()
+        self.df = pl.scan_csv(path)
+        self.df = self.df.with_row_count("row_idx")
+        print(sys.getsizeof(self.df))
 
+
+    @time_tracker(return_time=False)
     def get_batch(self,  indicies: np.ndarray) -> np.array:
-        ts_batch = np.stack([self.df[idx] for idx in indicies], axis=0)
-        return ts_batch
+        all_indices = np.concatenate(indicies)
+        filtered_df = self.df.filter(pl.col("row_idx").is_in(all_indices))
+
+        collected_df = filtered_df.collect()
+
+        df_np = collected_df.to_numpy()
+
+        results = [df_np[idx] for idx in indicies]
+        return results
+
