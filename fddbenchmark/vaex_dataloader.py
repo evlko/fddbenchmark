@@ -1,7 +1,8 @@
-import vaex
-import numpy as np
 import sys
 from typing import Optional
+
+import numpy as np
+import vaex
 
 from fddbenchmark import FDDDataloader, FDDDataset
 from utils.time_tracker import time_tracker
@@ -9,16 +10,16 @@ from utils.time_tracker import time_tracker
 
 class FDDDVaexDataloader(FDDDataloader):
     def __init__(
-            self,
-            dataset: FDDDataset,
-            train: bool,
-            window_size: int,
-            dilation: int = 1,
-            step_size: int = 1,
-            use_minibatches: bool = False,
-            batch_size: Optional[int] = None,
-            shuffle: bool = False,
-            random_state: Optional[int] = None,
+        self,
+        dataset: FDDDataset,
+        train: bool,
+        window_size: int,
+        dilation: int = 1,
+        step_size: int = 1,
+        use_minibatches: bool = False,
+        batch_size: Optional[int] = None,
+        shuffle: bool = False,
+        random_state: Optional[int] = None,
     ) -> None:
         super().__init__(
             dataset=dataset,
