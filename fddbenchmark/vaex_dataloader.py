@@ -44,6 +44,7 @@ class FDDDVaexDataloader(FDDDataloader):
         df_pd = filtered_df.to_pandas_df()
         df_pd = df_pd.iloc[:, 2:-1]
         df_np = df_pd.to_numpy()
+
         idx_map = {idx: i for i, idx in enumerate(unique_indices)}
         results = np.array([df_np[idx_map[idx]] for idx in all_indices])
         results = results.reshape(indices.shape + (-1,))
