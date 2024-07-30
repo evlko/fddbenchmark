@@ -2,12 +2,10 @@ from abc import ABC, abstractmethod
 from typing import Optional
 
 import numpy as np
-import pandas as pd
 from tqdm import tqdm
 
 from fddbenchmark.config import DATA_FOLDER
 from fddbenchmark.dataset import FDDDataset
-from utils.time_tracker import time_tracker
 
 
 class FDDDataloader(ABC):
@@ -66,10 +64,6 @@ class FDDDataloader(ABC):
         self.batch_seq = np.array(batch_seq)
         self.n_batches = len(batch_seq) - 1
 
-    @staticmethod
-    def get_mask(dataset: FDDDataset, train: bool) -> pd.Series:
-        return dataset.train_mask if train else ~dataset.train_mask
-
     def get_windows(
         self,
         dataset: FDDDataset,
@@ -82,18 +76,14 @@ class FDDDataloader(ABC):
         window_end_indices = []
 
         run_ids = (
-            dataset.df[self.get_mask(dataset=dataset, train=train)]
-            .index.get_level_values(0)
-            .unique()
+            dataset.df[dataset.get_mask(train=train)].index.get_level_values(0).unique()
         )
         for run_id in tqdm(run_ids, desc="Creating sequence of samples"):
             indices = np.array(dataset.df.index.get_locs([run_id]))
             indices = indices[window_size - 1 :]
             indices = indices[::step_size]
             indices = indices[
-                self.get_mask(dataset=dataset, train=train)
-                .iloc[indices]
-                .to_numpy(dtype=bool)
+                dataset.get_mask(train=train).iloc[indices].to_numpy(dtype=bool)
             ]
             window_end_indices.extend(indices)
 
@@ -137,5 +127,5 @@ class FDDDataloader(ABC):
         return ts_batch, index_batch, label_batch
 
     @abstractmethod
-    def get_batch(self, indices: np.ndarray) -> pd.DataFrame:
+    def get_batch(self, indices: np.ndarray) -> np.ndarray:
         pass

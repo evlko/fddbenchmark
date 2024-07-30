@@ -40,6 +40,9 @@ class FDDDataset:
         ]
         self.train_mask = train_mask.astype("boolean")
 
+    def get_mask(self, train: False):
+        return self.train_mask if train else ~self.train_mask
+
 
 def extracting_files(zfile_path: str, ref_path: str, bsize: int = 1024 * 10000) -> None:
     with zipfile.ZipFile(zfile_path, "r") as zfile:
