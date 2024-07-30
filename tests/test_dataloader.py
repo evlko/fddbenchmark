@@ -1,12 +1,10 @@
-import numpy as np
-
 from fddbenchmark import FDDDataset
-from fddbenchmark.dataloader import FDDDataloaderPandas
+from fddbenchmark.polars_dataloader import PolarsDataloader
 
 
 def test_small_tep():
     dataset = FDDDataset(name="small_tep")
-    loader = FDDDataloaderPandas(
+    loader = PolarsDataloader(
         dataset=dataset,
         train=True,
         window_size=100,
@@ -17,7 +15,7 @@ def test_small_tep():
     assert len(loader) == 42
     for ts, time_index, label in loader:
         break
-    assert ts.shape == (1024, 100, 0)
+    assert ts.shape == (1024, 100, 52)
     assert len(time_index) == 1024
     assert label.shape == (1024,)
     # assert np.all(
