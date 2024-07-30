@@ -2,12 +2,13 @@ import numpy as np
 import pandas as pd
 
 from fddbenchmark import FDDDataset, FDDEvaluator
-from fddbenchmark.dataloader import FDDDataLoaderDask
+from fddbenchmark.dask_dataloader import FDDDaskDataloader
+from fddbenchmark.polars_dataloader import FDDPolarsDataloader
 
 
 def test_small_tep():
     dataset = FDDDataset(name="small_tep")
-    loader = FDDDataLoaderDask(
+    loader = FDDPolarsDataloader(
         dataset=dataset,
         train=False,
         window_size=100,

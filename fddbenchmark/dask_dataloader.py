@@ -1,14 +1,15 @@
-import sys
 from typing import Optional
 
+import dask.array as da
+import dask.dataframe as dd
 import numpy as np
-import polars as pl
 
-from fddbenchmark import FDDDataloader, FDDDataset
+from fddbenchmark.dataloader import FDDDataloader
+from fddbenchmark.dataset import FDDDataset
 from utils.time_tracker import time_tracker
 
 
-class FDDPolarsDataloader(FDDDataloader):
+class FDDDaskDataloader(FDDDataloader):
     def __init__(
         self,
         dataset: FDDDataset,
@@ -33,19 +34,12 @@ class FDDPolarsDataloader(FDDDataloader):
             random_state=random_state,
         )
         path = f"data/{self.dataset.name}/dataset.csv"
-        self.df = pl.scan_csv(path)
-        self.df = self.df.with_row_index("row_idx")
-        print(sys.getsizeof(self.df))
+        ddf = dd.read_csv(path)
+        ddf = ddf.drop(ddf.columns[:2].tolist(), axis=1)
+        self.dask_array = ddf.to_dask_array(lengths=True)
 
     @time_tracker(return_time=False)
     def get_batch(self, indices: np.ndarray) -> np.ndarray:
-        all_indices = np.concatenate(indices)
-        unique_indices = np.unique(all_indices)
-        filtered_df = self.df.filter(pl.col("row_idx").is_in(all_indices))
-        collected_df = filtered_df.collect()
-        collected_df = collected_df.select(collected_df.columns[3:])
-        df_np = collected_df.to_numpy()
-        idx_map = {idx: i for i, idx in enumerate(unique_indices)}
-        results = np.array([df_np[idx_map[idx]] for idx in all_indices])
-        results = results.reshape(indices.shape + (-1,))
-        return results
+        print(indices)
+        ts_batch = da.stack([self.dask_array[idx] for idx in indices], axis=0).compute()
+        return ts_batch
