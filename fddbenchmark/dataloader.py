@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+from fddbenchmark.config import DATA_FOLDER
 from fddbenchmark.dataset import FDDDataset
 from utils.time_tracker import time_tracker
 
@@ -45,6 +46,7 @@ class FDDDataloader(ABC):
             )
 
         self.dataset = dataset
+        self.path = f"{DATA_FOLDER}/{self.dataset.name}/dataset.csv"
         self.window_size = window_size
         self.dilation = dilation
         self.step_size = step_size

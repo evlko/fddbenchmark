@@ -32,8 +32,7 @@ class FDDPolarsDataloader(FDDDataloader):
             shuffle=shuffle,
             random_state=random_state,
         )
-        path = f"data/{self.dataset.name}/dataset.csv"
-        self.df = pl.scan_csv(path)
+        self.df = pl.scan_csv(self.path)
         self.df = self.df.with_row_index("row_idx")
         print(sys.getsizeof(self.df))
 

@@ -33,8 +33,7 @@ class FDDDaskDataloader(FDDDataloader):
             shuffle=shuffle,
             random_state=random_state,
         )
-        path = f"data/{self.dataset.name}/dataset.csv"
-        ddf = dd.read_csv(path)
+        ddf = dd.read_csv(self.path)
         ddf = ddf.drop(ddf.columns[:2].tolist(), axis=1)
         self.dask_array = ddf.to_dask_array(lengths=True)
 
