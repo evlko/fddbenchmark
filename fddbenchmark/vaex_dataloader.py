@@ -8,7 +8,7 @@ from fddbenchmark import FDDDataloader, FDDDataset
 from utils.time_tracker import time_tracker
 
 
-class FDDDVaexDataloader(FDDDataloader):
+class FDDVaexDataloader(FDDDataloader):
     def __init__(
         self,
         dataset: FDDDataset,
